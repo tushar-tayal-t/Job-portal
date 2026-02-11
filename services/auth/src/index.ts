@@ -3,18 +3,18 @@ import dotenv from 'dotenv'
 import sql from './utils/db.js';
 import { createClient, RedisClientType } from 'redis';
 
-dotenv.config();
+dotenv.config(); 
 
 declare global{
   var redisClientGlobal: RedisClientType | undefined;
 }
 
 if (!global.redisClientGlobal) {
-  global.redisClientGlobal = createClient({
-    url: process.env.REDIS_URL,
+  global.redisClientGlobal = createClient({ 
+    url: process.env.REDIS_URL, 
   });
 
-  global.redisClientGlobal
+  global.redisClientGlobal 
     .connect()
     .then(()=> console.log("✅ Connected to redis"))
     .catch(console.error);

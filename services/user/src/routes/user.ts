@@ -1,9 +1,10 @@
 import express from "express";
 import { isAuth } from "../middleware/auth.js";
-import { myProfile } from "../controllers/user.js";
+import { getUserProfile, myProfile } from "../controllers/user.js";
 
 const router = express.Router();
 
 router.get("/me", isAuth, myProfile);
-
-export default router;
+router.get("/:userId", isAuth, getUserProfile); 
+  
+export default router; 
