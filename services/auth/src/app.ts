@@ -5,7 +5,7 @@ import { connectKafka } from './producer.js';
 const app = express();
 
 app.use(express.json());
-connectKafka();
+connectKafka(); 
 
 app.use("/api/auth", authRoutes);
 

@@ -1,7 +1,21 @@
 import app from './app.js';
 import dotenv from 'dotenv';
 import sql from './utils/db.js';
+import { createClient } from 'redis';
 dotenv.config();
+if (!global.redisClientGlobal) {
+    global.redisClientGlobal = createClient({
+        url: process.env.REDIS_URL,
+    });
+    global.redisClientGlobal
+        .connect()
+        .then(() => console.log("✅ Connected to redis"))
+        .catch(console.error);
+}
+else {
+    console.log("✅ Connected to redis");
+}
+export const redisClient = global.redisClientGlobal;
 async function initDb() {
     try {
         await sql `

@@ -28,7 +28,7 @@ export const connectKafka = async() => {
           },
         ],
       });
-      console.log("✅Topic send-mail created");
+      console.log("✅ Topic send-mail created");
     }
     await admin.disconnect();
     
@@ -36,7 +36,7 @@ export const connectKafka = async() => {
     
     await producer.connect();
     
-    console.log("✅Connected to kafka producer");
+    console.log("✅ Connected to kafka producer");
 
   } catch(error) {
     console.log("Failed to connect with kafka", error);
