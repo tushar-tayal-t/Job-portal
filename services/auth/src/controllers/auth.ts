@@ -100,7 +100,7 @@ export const loginUser = TryCatch(async(req, res, next)=>{
     message: "user LoggedIn",
     userObject,
     token
-  });
+  }); 
 
 });
 

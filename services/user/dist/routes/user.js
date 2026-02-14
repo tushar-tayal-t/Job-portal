@@ -1,7 +1,13 @@
 import express from "express";
 import { isAuth } from "../middleware/auth.js";
-import { getUserProfile, myProfile } from "../controllers/user.js";
+import { addSkillToUser, deleteSkillFromUser, getUserProfile, myProfile, updateProfilePic, updateResume, updateUserProfile } from "../controllers/user.js";
+import uploadFile from "../middleware/multer.js";
 const router = express.Router();
 router.get("/me", isAuth, myProfile);
 router.get("/:userId", isAuth, getUserProfile);
+router.put("/update/profile", isAuth, updateUserProfile);
+router.put("/update/pic", uploadFile, isAuth, updateProfilePic);
+router.put("/update/resume", uploadFile, isAuth, updateResume);
+router.post("/skill/add", isAuth, addSkillToUser);
+router.post("/skill/delete", isAuth, deleteSkillFromUser);
 export default router;

@@ -11,6 +11,16 @@ cloudinary.config({
     api_key: process.env.API_KEY,
     api_secret: process.env.API_SECRET // Click 'View API Keys' above to copy your API secret
 });
+async function checkCloudinary() {
+    try {
+        const result = await cloudinary.api.ping();
+        console.log("Cloudinary connected:", result);
+    }
+    catch (error) {
+        console.error("Cloudinary configuration failed:", error);
+    }
+}
+checkCloudinary();
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));

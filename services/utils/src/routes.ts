@@ -10,7 +10,7 @@ router.post("/uploads", async(req, res)=>{
     }
 
     const cloud = await cloudinary.v2.uploader.upload(buffer);
-
+    
     res.json({
       url: cloud.secure_url,
       public_id: cloud.public_id
