@@ -58,7 +58,7 @@ async function initDb() {
         applied_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
         subscribed BOOLEAN,
         UNIQUE (job_id, applicant_id)
-      )
+      ) 
     `;
         console.log("Job service database tables checked and created successfully");
     }

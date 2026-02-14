@@ -36,4 +36,4 @@ app.use('/api/utils', routes);
 
 app.listen(process.env.PORT, ()=>{
   console.log(`Utils service is running on http://localhost:${process.env.PORT}`)
-})
+}) 
