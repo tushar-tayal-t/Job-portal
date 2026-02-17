@@ -8,7 +8,7 @@
 # Builds
 build/
 
-inst
+/inst/
 
 .gitignore
 .git

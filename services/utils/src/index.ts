@@ -17,12 +17,12 @@ cloudinary.config({
 
 async function checkCloudinary() {
   try {
-    const result = await cloudinary.api.ping();
-    console.log("Cloudinary connected:", result);
+    let result = await cloudinary.api.ping();
+    console.log("Cloudinary connected status:", result?.status);
   } catch (error) {
     console.error("Cloudinary configuration failed:", error);
   }
-}
+} 
 
 checkCloudinary();
 
