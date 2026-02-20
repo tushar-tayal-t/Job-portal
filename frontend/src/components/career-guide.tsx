@@ -1,5 +1,6 @@
 "use client";
-import { CareerGuideResponse, utils_service } from '@/types';
+import { CareerGuideResponse } from '@/types';
+import { utils_service } from '@/context/AppContext';
 import axios from 'axios';
 import { ArrowRight, BookOpen, Briefcase, Lightbulb, Loader2, Sparkles, Target, TrendingUp, X } from 'lucide-react'
 import React, { useState } from 'react'
@@ -7,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
+import toast from 'react-hot-toast';
 
 const CareerGuide = () => {
   const [open, setOpen] = useState(false);
@@ -34,7 +36,7 @@ const CareerGuide = () => {
 
   const getCareerGuidance = async() => {
     if (skills.length === 0) {
-      alert("Please add at least one skill");
+      toast.error("Please add at least one skill");
       return;
     }
     setLoading(true);
@@ -43,12 +45,12 @@ const CareerGuide = () => {
         skills: skills
       });
       setResponse(data?.jsonResponse);
-      alert("Career guidance generated");
+      toast.success("Career guidance generated");
     } catch(error: any) {
       if (error?.response) {
-        alert(error?.response?.data?.message)
+        toast.error(error?.response?.data?.message)
       } else {
-        alert(error)
+        toast.error(error?.message);
       }
     } finally {
       setLoading(false);
