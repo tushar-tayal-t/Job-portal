@@ -7,9 +7,12 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { ModeToggle } from './mode-toggle';
 import { useAppData } from '@/context/AppContext';
+import { usePathname } from 'next/navigation';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const pathname = usePathname();
 
   const {user, isAuth, setIsAuth, setUser, loading, logoutUser} = useAppData();
 
@@ -56,9 +59,9 @@ const Navbar = () => {
 
           {/* Right side actions */}
           <div className='hidden md:flex items-center gap-3'>
-            {loading ? "" : <>
+            {loading || pathname === '/login' ? "" : <>
               {isAuth ? (
-                <Popover>
+                <Popover open={profileOpen} onOpenChange={setProfileOpen}>
                   <PopoverTrigger asChild>
                     <button className='flex items-center gap-2 hover:opacity-80 transition-opacity'>
                       <Avatar 
@@ -79,7 +82,7 @@ const Navbar = () => {
                       <p className="text-xs opacity-60 truncate">{user && user.email}</p>
                     </div>
 
-                    <Link href={'/account'}>
+                    <Link href={'/account'} onClick={()=>setProfileOpen(false)}>
                       <Button className='w-full justify-start gap-2' variant={"ghost"}>
                         <User size={16}/> My Profile
                       </Button>

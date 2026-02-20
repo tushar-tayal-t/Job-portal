@@ -29,10 +29,12 @@ export const registerUser = TryCatch(async(req, res, next)=>{
       VALUES (${name}, ${email}, ${hashPassword}, ${phoneNumber}, ${role}) 
       RETURNING user_id, name, email, role, phone_number, created_at
     ` as any[];
+
     registerdUser = user[0];
+
   } else if (role === 'jobseeker') {
     const file = req.file;
-    
+
     if (!file) {
       throw new ErrorHandler(400, "Resume file is required for jobseeker");
     }
@@ -40,29 +42,41 @@ export const registerUser = TryCatch(async(req, res, next)=>{
     if (!filebuffer || !filebuffer?.content) {
       throw new ErrorHandler(500, 'Failed to generate buffer');
     }
-    
-    const {data} = await axios.post(
-      `${process.env.UPLOAD_SERVICE}/api/utils/upload`,
-      { buffer: filebuffer.content }
-    );
+    let axiosData;
+    try {
+      const {data} = await axios.post(
+        `${process.env.UPLOAD_SERVICE}/api/utils/uploads`,
+        { buffer: filebuffer.content }
+      );
+      axiosData = data
+    } catch(error:any) {
+      console.error("Utils service is not working");
+      throw new ErrorHandler(500, error.message);
+    }
     
     const user = await sql` 
       INSERT INTO users (name, email, password, phone_number, role, bio, resume, resume_public_id)
-      VALUES (${name}, ${email}, ${hashPassword}, ${phoneNumber}, ${role}, ${bio}, ${data.url}, ${data.public_id}) 
+      VALUES (${name}, ${email}, ${hashPassword}, ${phoneNumber}, ${role}, ${bio}, ${axiosData.url}, ${axiosData.public_id}) 
       RETURNING user_id, name, email, role, phone_number, bio, resume, created_at
     ` as any[];
     registerdUser = user[0];
   }
-  const token = jwt.sign(
-    { id: registerdUser?.user_id }, 
-    process.env.JWT_SEC as string,
-    { expiresIn: '15d' }
-  )
-  res.json({
-    message: "User registered",
-    registerdUser,
-    token
-  });
+  if (registerdUser) {
+    const token = jwt.sign(
+      { id: registerdUser?.user_id }, 
+      process.env.JWT_SEC as string,
+      { expiresIn: '15d' }
+    )
+    res.json({
+      message: "User registered",
+      registerdUser,
+      token
+    });
+  } else {
+    res.status(500).json({
+      message: "Failed to register the user",
+    });
+  }
 }); 
 
 export const loginUser = TryCatch(async(req, res, next)=>{
