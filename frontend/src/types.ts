@@ -76,6 +76,10 @@ export interface AppContextType{
   setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
   logoutUser: () => Promise<void>;
   updateProfilePic: (formData: any) => Promise<void>;
+  updateResume: (formData: any) => Promise<void>;
+  updateUser: (name: string, phoneNumber: string, bio:string) => Promise<void>;
+  addSkill: (skill: string) => Promise<void>;
+  removeSkill: (skill: string) => Promise<void>;
 }
 
 export interface AppProviderProps{
