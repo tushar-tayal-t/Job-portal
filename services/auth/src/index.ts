@@ -14,14 +14,14 @@ if (!global.redisClientGlobal) {
     url: process.env.REDIS_URL, 
   });
 
-  // global.redisClientGlobal 
-  //   .connect()
-  //   .then(()=> console.log("✅ Connected to redis"))
-  //   .catch(console.error);
+  global.redisClientGlobal 
+    .connect()
+    .then(()=> console.log("✅ Connected to redis"))
+    .catch(console.error);
 } else {
-  console.log("✅ Connected to redis")
-}
-export const redisClient: RedisClientType = global.redisClientGlobal!;
+  console.log("✅ Connected to redis");
+}  
+export const redisClient: RedisClientType = global.redisClientGlobal!; 
 
 async function initDb() {
   try {

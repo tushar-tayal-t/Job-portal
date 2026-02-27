@@ -90,7 +90,16 @@ const Skills: React.FC<AccountProps> = ({user, isYourAccount}) => {
               ))
             }
           </div>) : (<>
-            
+            <div className="text-center py-12 ">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4 ">
+                <Award size={32} className='opacity-40'/>
+              </div>
+              <CardDescription className='text-base'>
+                {isYourAccount 
+                  ? "No Skill Added Yet. Start Building Your profile!" 
+                  : "No skill added by user"}
+              </CardDescription>
+            </div>
           </>)}
         </CardContent>
       </Card>

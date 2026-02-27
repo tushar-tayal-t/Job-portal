@@ -4,7 +4,7 @@ import sql from "./utils/db.js";
 import { connectKafka } from "./producer.js";
 
 dotenv.config();
-
+ 
 async function initDb() {
   try { 
     await sql`

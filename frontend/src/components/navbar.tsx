@@ -153,7 +153,7 @@ const Navbar = () => {
           {
             isAuth ? ( 
             <>
-              <Link href={'/about'} onClick={toggleMenu}>
+              <Link href={'/account'} onClick={toggleMenu}>
                 <Button variant={"ghost"} className='w-full justify-start gap-3 h-11'>
                   <User size={16}/> My profile
                 </Button>

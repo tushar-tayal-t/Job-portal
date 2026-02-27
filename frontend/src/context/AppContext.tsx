@@ -1,6 +1,6 @@
 "use client";
 
-import { AppContextType, AppProviderProps, User } from "@/types";
+import { AppContextType, Application, AppProviderProps, User } from "@/types";
 import { createContext, useContext, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import Cookies from "js-cookie";
@@ -18,6 +18,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
   const [isAuth, setIsAuth] = useState(false);
   const [loading, setLoading] = useState(true);
   const [btnLoading, setBtnLoading] = useState(false);
+  const [applications, setApplications] = useState<Application[] | null>(null);
 
   const token = Cookies.get("token");
 
@@ -159,13 +160,64 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
     }
   }
 
+  async function fetchApplications(){
+    try {
+      const {data} = await axios.get(
+        `${user_service}/api/user/application/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      console.log(data);
+      setApplications(data);
+    } catch(error: any) {
+      console.error(error);
+      if (error.response?.data?.message) {
+        toast.error(error.response?.data?.message);
+      } else {
+        toast.error(error.message);
+      }
+    }
+  }
+
+  async function applyJob(jobId: number) {
+    setBtnLoading(true);
+    try {
+      const {data} = await axios.post(
+        `${user_service}/api/user/apply/job`, 
+        {
+          job_id: jobId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      toast.success(data.message);
+      fetchApplications();
+    } catch(error:any) {
+      if (error.response?.data?.message) {
+        toast.error(error.response?.data?.message);
+      } else {
+        toast.error(error.message);
+      }
+    } finally {
+      setBtnLoading(false);
+    }
+  } 
+
   useEffect(()=>{
     if (Cookies.get("token")) {
       fetchUser();
+      fetchApplications();
     } else {
       setLoading(false);
     }
   }, []);
+
   return (
     <AppContext.Provider 
       value={{
@@ -181,7 +233,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
         updateResume,
         updateUser,
         addSkill,
-        removeSkill
+        removeSkill,
+        applyJob,
+        applications,
+        fetchApplications
       }}
     >
       {children}

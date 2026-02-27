@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAppData } from '@/context/AppContext';
 import { AccountProps } from '@/types'
-import { Briefcase, Camera, Edit, FileText, Mail, NotepadText, Phone, UserIcon } from 'lucide-react'
+import { Briefcase, Camera, Crown, Edit, FileText, Mail, NotepadText, Phone, UserIcon } from 'lucide-react'
 import Link from 'next/link'
 import React, { ChangeEvent, useRef, useState } from 'react'
 
@@ -182,6 +182,43 @@ const Info: React.FC<AccountProps> = ({user, isYourAccount}) => {
               <input accept='application/pdf' onChange={changeResume} type="file" className='hidden' ref={resumeRef}/>
             </div>
           </div>}
+
+          {/* subscription section */}
+          {
+            isYourAccount && (
+              <>
+                {user.role === "jobseeker" && (
+                  <div className="mt-8">
+                    <h2 className='text-lg font-semibold mt-4 flex items-center gap-2'>
+                      <Crown size={20} className='text-blue-600'/>
+                      Subscription Status
+                    </h2> 
+                    <div className="p-6 rounded-lg bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-950/20">
+                      {!user.subscription ? (
+                        <>
+                          <div className="flex items-center justify-between flex-wrap gap-4">
+                            <div>
+                              <p className="font-semibold text-lg mb-1">
+                                No Active Subscription
+                              </p>
+                              <p className="text-sm opacity-70">
+                                Subscribe to unlock premium features
+                              </p>
+                            </div>
+                            <Button></Button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                        
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
+            )
+          }
         </div>
       </Card>
 

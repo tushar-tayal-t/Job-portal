@@ -198,7 +198,7 @@ export const updateJob = TryCatch(async(req: AuthenticatedRequest, res)=>{
     openings,
     is_active
   } = req.body;
-
+  
   const [existingJob] = await sql`
     SELECT 
       posted_by_recruiter_id 
