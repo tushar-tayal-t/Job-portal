@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAppData } from '@/context/AppContext';
 import { AccountProps } from '@/types'
-import { Briefcase, Camera, Crown, Edit, FileText, Mail, NotepadText, Phone, UserIcon } from 'lucide-react'
+import { AlertTriangle, Briefcase, Camera, CheckCircle2, Crown, Edit, FileText, Mail, NotepadText, Phone, RefreshCcw, UserIcon } from 'lucide-react'
 import Link from 'next/link'
 import React, { ChangeEvent, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation';
 
 const Info: React.FC<AccountProps> = ({user, isYourAccount}) => {
   const {updateProfilePic, updateResume, btnLoading, updateUser} = useAppData();
@@ -19,6 +20,7 @@ const Info: React.FC<AccountProps> = ({user, isYourAccount}) => {
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [bio, setBio] = useState("");
+  const router = useRouter();
 
   const handleClick = () => {
     inputRef.current?.click();
@@ -205,12 +207,70 @@ const Info: React.FC<AccountProps> = ({user, isYourAccount}) => {
                                 Subscribe to unlock premium features
                               </p>
                             </div>
-                            <Button></Button>
+                            <Button className='gap-2 cursor-pointer' onClick={()=>router.push('/subcribe')}>
+                              <Crown size={18}/>Subscribe Now
+                            </Button>
                           </div>
                         </>
                       ) : (
                         <>
-                        
+                          {(new Date(user.subscription).getTime() > Date.now()) ? (
+                            <div className="flex items-center justify-between flex-wrap gap-4">
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <CheckCircle2 size={20} className='text-green-600'/>
+                                  <p className='font-semibold text-lg text-gray-600'>
+                                    Active Subscription
+                                  </p>
+                                </div>
+                                <p className="text-sm opacity-70">
+                                  Valid until: {" "}
+                                  {
+                                    new Date(user.subscription).toLocaleDateString(
+                                      "en-US",
+                                      {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric"
+                                      }
+                                    )
+                                  }
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-700 text-white font-medium">
+                                <CheckCircle2 size={18}/>
+                                Subcribed
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between flex-wrap gap-4">
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <AlertTriangle size={20} className='text-red-600'/>
+                                  <p className="font-semibold text-lg text-red-600">
+                                    Subscription Expired
+                                  </p>
+                                </div>
+                                <p className="text-sm opacity-70">
+                                  Expired On: {" "} 
+                                  {
+                                    new Date(user.subscription).toLocaleDateString(
+                                      "en-US",
+                                      {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric"
+                                      }
+                                    )
+                                  }
+                                </p>
+                              </div>
+                              <Button variant={"destructive"} className='gap-2' onClick={()=>router.push("/subscribe")}>
+                                <RefreshCcw size={18}/>
+                                Renew Subscription
+                              </Button>
+                            </div>
+                          )}
                         </>
                       )}
                     </div>
