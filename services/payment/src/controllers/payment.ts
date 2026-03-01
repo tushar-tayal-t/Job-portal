@@ -5,6 +5,8 @@ import { TryCatch } from "../utils/TryCatch.js";
 import { stripe } from "../index.js";
 
 export const checkOut = TryCatch(async (req: AuthenticatedRequest, res) => {
+  const amount = req.body;
+  
   if (!req.user) {
     new ErrorHandler(401, "No valid User");
   }
@@ -27,41 +29,81 @@ export const checkOut = TryCatch(async (req: AuthenticatedRequest, res) => {
     throw new ErrorHandler(400, "Already have an subscription");
   }
 
-  const options = {
-    amount: Number(119 * 100),
-    currency: "INR",
-    automatic_payment_methods: { enabled: true },
-    metadata: {
-      user_id: userId?.toString() as string,
+  const session = await stripe.checkout.sessions.create(
+    {
+      line_items: [
+        {
+          price_data: {
+            currency: 'inr',
+            product_data: {
+              name: 'Hire heaven subscription',
+            },
+            unit_amount: 119 * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `http://localhost:3000/payment/verify/{CHECKOUT_SESSION_ID}`,
+      cancel_url: 'http://localhost:3000/payment/verify/0',
+      metadata: {
+        user_id: userId?.toString() as string,
+      },
     }
-  }
-
-  const paymentIntent = await stripe.paymentIntents.create(options);
+  );
 
   res.status(201).json({
-    paymentIntent,
+    url: session.url,
     message: "Checkout Successfull"
   });
 });
 
 export const paymentVerification = TryCatch(async(req: AuthenticatedRequest, res)=>{
   const user = req.user;
+  const {id} = req.body;
   if (!req.user) {
     new ErrorHandler(401, "No valid User");
   }
-  // {
-  //   "id": "pi_3NxABC123xyz",
-  //   "object": "payment_intent",
-  //   "amount": 11900,
-  //   "currency": "inr",
-  //   "status": "requires_payment_method",
-  //   "client_secret": "pi_3NxABC123xyz_secret_xxxxxxxxx",
-  //   "metadata": {
-  //     "user_id": "64f123abc456"
-  //   },
-  //   "created": 1709123456
-  // }
+  if (!id) {
+    new ErrorHandler(400, "No id provided");
+  }
+
+  const subTime = user?.subscription 
+    ? new Date(user.subscription).getTime() 
+    : 0;
   
+  const now = Date.now();
+  const isSubcribed = subTime > now;
 
+  const session = await stripe.checkout.sessions.retrieve(id);
 
+  if (isSubcribed) {
+    res.status(200).json({
+      message: "Payment successful",
+      paymentIntent: session.payment_intent
+    });
+  }
+  if (!session) {
+    new ErrorHandler(500, "No session found");
+  }
+  if (session.status === "complete" && session.metadata?.user_id === String(req.user?.user_id)) {
+    //Database entry
+    const now = new Date();
+
+    const thiryDays = 30 * 24 * 60 * 60 * 1000;
+
+    const expiryDate = new Date(now.getTime() + thiryDays)
+    
+    const [updatedUser] = await sql`
+      UPDATE users SET subscription = ${expiryDate} WHERE user_id = ${user?.user_id} RETURNING *
+    ` as any[];
+
+    res.status(200).json({
+      message: "Subscription purchased successfully",
+      updatedUser,
+      paymentIntent: session.payment_intent
+    });
+  } else {
+    throw new ErrorHandler(400, "Please give the valid sesssion id");
+  }
 })

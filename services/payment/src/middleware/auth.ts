@@ -42,7 +42,6 @@ Promise<void> => {
       });
       return;
     }
-
     const users = await sql`
       SELECT 
         u.user_id, u.name, u.email, u.phone_number, u.role, u.bio, u.resume, u.resume_public_id, u.profile_pic, u.profile_pic_public_id, u.subscription, ARRAY_AGG(s.name) FILTER (WHERE s.name IS NOT NULL) as skills 

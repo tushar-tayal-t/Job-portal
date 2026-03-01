@@ -207,7 +207,7 @@ const Info: React.FC<AccountProps> = ({user, isYourAccount}) => {
                                 Subscribe to unlock premium features
                               </p>
                             </div>
-                            <Button className='gap-2 cursor-pointer' onClick={()=>router.push('/subcribe')}>
+                            <Button className='gap-2 cursor-pointer' onClick={()=>router.push('/subscribe')}>
                               <Crown size={18}/>Subscribe Now
                             </Button>
                           </div>
