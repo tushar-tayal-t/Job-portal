@@ -16,7 +16,7 @@ const AccountPage = () => {
   useEffect(()=>{
     if (!isAuth && !loading) router.push('/');
   }, [isAuth, loading]);
-
+  
   if (loading) return <Loading/>
   
   return (<>

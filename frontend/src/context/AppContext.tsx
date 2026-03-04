@@ -20,8 +20,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
   const [loading, setLoading] = useState(true);
   const [btnLoading, setBtnLoading] = useState(false);
   const [applications, setApplications] = useState<Application[] | null>(null);
-
-  const token = Cookies.get("token");
+  const [token, setToken] = useState<string | undefined>(Cookies.get("token"));
 
   async function fetchUser() {
     try {
@@ -171,7 +170,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
           }
         }
       );
-      console.log(data);
       setApplications(data);
     } catch(error: any) {
       console.error(error);
@@ -237,7 +235,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({children}) => {
         removeSkill,
         applyJob,
         applications,
-        fetchApplications
+        fetchApplications,
+        setToken
       }}
     >
       {children}

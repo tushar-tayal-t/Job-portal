@@ -124,7 +124,7 @@ const JobsPage = () => {
           {
             loading ? <Loading/> : (<>
               {jobs && jobs.length > 0 ? (
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8'>
+                <div className='grid mt-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8'>
                   {
                     jobs.map((job)=>(
                       <JobCard key={job.job_id} job={job}/>

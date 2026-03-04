@@ -2,13 +2,14 @@
 import { CareerGuideResponse } from '@/types';
 import { utils_service } from '@/context/AppContext';
 import axios from 'axios';
-import { ArrowRight, BookOpen, Briefcase, Lightbulb, Loader2, Sparkles, Target, TrendingUp, X } from 'lucide-react'
-import React, { useState } from 'react'
+import { ArrowRight, BookOpen, Briefcase, Cookie, Lightbulb, Loader2, Sparkles, Target, TrendingUp, X } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
 
 const CareerGuide = () => {
   const [open, setOpen] = useState(false);
@@ -34,7 +35,22 @@ const CareerGuide = () => {
     }    
   }
 
+  useEffect(()=>{
+    if (!Cookies.get("job_portal_career")) {
+      Cookies.set("job_portal_career", "5", {
+        expires: 1,
+      });
+    }
+  }, []);
+
   const getCareerGuidance = async() => {
+    if (!Number(Cookies.get("job_portal_career"))) {
+      toast.error("Your daily quota for career guidance has exceeded the limit");
+      return;
+    }
+    let dailyCount = Number(Cookies.get("job_portal_career")) - 1;
+    Cookies.set("job_portal_career", dailyCount.toString());
+
     if (skills.length === 0) {
       toast.error("Please add at least one skill");
       return;
@@ -47,10 +63,13 @@ const CareerGuide = () => {
       setResponse(data?.jsonResponse);
       toast.success("Career guidance generated");
     } catch(error: any) {
+      console.log(error);
       if (error?.response) {
         toast.error(error?.response?.data?.message)
-      } else {
+      } else if(error?.message) {
         toast.error(error?.message);
+      } else {
+        toast.error(error);
       }
     } finally {
       setLoading(false);

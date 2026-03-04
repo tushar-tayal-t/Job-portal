@@ -76,6 +76,9 @@ export const forgotPasswordTemplate = (resetLink: string) => {
             word-break: break-all; 
             border-radius: 4px; 
         } 
+        .reset-btn{
+          color: white !important;
+        }
         .warning { 
             margin: 20px 0; 
             color: #666666; 
@@ -121,7 +124,7 @@ button below to create a new password:
                              
                             <!-- Button --> 
                             <div class="button-wrapper"> 
-                                <a href="${resetLink}" class="button">Reset Password</a> 
+                                <a href="${resetLink}" class="button reset-btn">Reset Password</a> 
                             </div> 
                              
                             <p class="text-muted"> 

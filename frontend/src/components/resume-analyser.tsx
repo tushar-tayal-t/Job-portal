@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,6 +25,7 @@ import axios from "axios";
 import { ResumeAnalysisResponse } from "@/types";
 import { utils_service } from "@/context/AppContext";
 import toast from "react-hot-toast";
+import Cookies from "js-cookie";
 
 const ResumeAnalyzer = () => {
   const [open, setOpen] = useState<boolean>(false);
@@ -58,6 +59,13 @@ const ResumeAnalyzer = () => {
   };
 
   const analyzeResume = async () => {
+    if (!Number(Cookies.get("job_portal_resume"))) {
+      toast.error("Your daily quota for career guidance has exceeded the limit");
+      return;
+    }
+    let dailyCount = Number(Cookies.get("job_portal_resume")) - 1;
+    Cookies.set("job_portal_resume", dailyCount.toString());
+
     if (!file) {
       toast.error("Please upload a resume");
       return;
@@ -90,6 +98,14 @@ const ResumeAnalyzer = () => {
       fileInputRef.current.value = "";
     }
   };
+
+  useEffect(()=>{
+    if (!Cookies.get("job_portal_resume")) {
+      Cookies.set("job_portal_resume", "5", {
+        expires: 1,
+      });
+    }
+  }, []);
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600";

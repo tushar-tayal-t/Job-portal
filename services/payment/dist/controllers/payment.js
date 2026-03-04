@@ -25,7 +25,7 @@ export const checkOut = TryCatch(async (req, res) => {
                 price_data: {
                     currency: 'inr',
                     product_data: {
-                        name: 'Hire heaven subscription',
+                        name: 'Job portal subscription',
                     },
                     unit_amount: 119 * 100,
                 },

@@ -6,26 +6,31 @@ import { useState } from 'react'
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
 import { Label } from '@/components/ui/label';
-import { ArrowRight, Lock, Mail } from 'lucide-react';
+import { ArrowRight, Loader2, Lock, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Loading from '@/components/loading';
+import { useForm } from "react-hook-form";
+
+type FormData = {
+  email: string;
+  password: string;
+}
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>(); 
   const [btnLoading, setBtnLoading] = useState(false);
   const [eye, setEye] = useState(false);
 
-  const {isAuth, setUser, loading, setIsAuth, fetchApplications} = useAppData();
+  const {isAuth, setUser, loading, setIsAuth, fetchApplications, setToken} = useAppData();
 
   if (loading) return <Loading/>
   
   if (isAuth) redirect('/');
 
-  const submitHandler = async(e:React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const submitHandler = async(data: FormData) => {
+    const {email, password} = data;
     setBtnLoading(true);
     try {
       const {data} = await axios.post(`${auth_service}/api/auth/login`, {
@@ -40,6 +45,7 @@ const LoginPage = () => {
         secure: true,
         path: "/"
       });
+      setToken(Cookies.get("token"));
       setUser(data.userObject);
       setIsAuth(true);
       fetchApplications();
@@ -58,11 +64,11 @@ const LoginPage = () => {
     <div className='min-h-screen flex items-center justify-center px-4 py-12'>
       <div className="w-full max-w-md">
         <div className='text-center mb-8'>
-          <h1 className='text-4xl font-bold mb-2'>Welcome back to HireHeaven</h1>
+          <h1 className='text-4xl font-bold mb-2'>Welcome back to JobsPortal</h1>
           <p className="text-sm opacity-70">Sign in to continue your journey</p>
         </div>
         <div className='border border-gray-400 rounded-2xl p-8 shadow-lg backdrop-blur-sm'>
-          <form onSubmit={submitHandler} className='space-y-5'>
+          <form onSubmit={handleSubmit(submitHandler)} className='space-y-5'>
             <div className="space-y-2">
               <Label htmlFor='email' className='text-sm font-medium'>Email Address</Label>
               <div className="relative">
@@ -71,12 +77,17 @@ const LoginPage = () => {
                   id='email' 
                   type='email' 
                   placeholder='you@example.com' 
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  required
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^\S+@\S+\.\S+$/,
+                      message: "Invalid email format"
+                    }
+                  })}
                   className='pl-10 h-11'
                 />
               </div>
+              {errors.email && <p className='text-red-400'>{errors.email.message}</p>}
             </div>
 
             <div className="space-y-2">
@@ -87,9 +98,9 @@ const LoginPage = () => {
                   id='password' 
                   type={eye ? 'text' : 'password'} 
                   placeholder='*******' 
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
+                  {...register("password", {
+                    required: "Password is required",
+                  })}
                   className='pl-10 h-11'
                 />
                 <button 
@@ -106,6 +117,7 @@ const LoginPage = () => {
                   )}
                 </button>
               </div>
+              {errors.password && <p className='text-red-400'>{errors.password.message}</p>}
             </div>
 
             <div className='flex items-center justify-end'>
@@ -115,8 +127,12 @@ const LoginPage = () => {
               >Forget Password?</Link>
             </div>
 
-            <Button disabled={btnLoading} className='w-full'>
-              {btnLoading ? "Signing in..." : "Sign In"}
+            <Button type='submit' disabled={btnLoading} className='w-full'>
+              {btnLoading ? (
+                <>
+                  <Loader2 size={18} className='animate-spin'/> Signing in...
+                </>
+              ) : "Sign In"}
               <ArrowRight size={18} />
             </Button>
           </form>

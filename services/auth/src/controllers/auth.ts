@@ -5,10 +5,10 @@ import jwt from "jsonwebtoken";
 import ErrorHandler from "../utils/errorHandler.js";
 import sql from "../utils/db.js";
 import bcrypt from 'bcrypt';
-import getBuffer from "../utils/buffer.js";
 import axios from "axios";
 import { publicToTopic } from "../producer.js";
 import { redisClient } from "../index.js";
+import FormData from "form-data"; 
 
 export const registerUser = TryCatch(async(req, res, next)=>{
   const {name, email, password, phoneNumber, role, bio} = req.body;
@@ -34,21 +34,28 @@ export const registerUser = TryCatch(async(req, res, next)=>{
 
   } else if (role === 'jobseeker') {
     const file = req.file;
-
     if (!file) {
       throw new ErrorHandler(400, "Resume file is required for jobseeker");
     }
-    const filebuffer = getBuffer(file);
-    if (!filebuffer || !filebuffer?.content) {
-      throw new ErrorHandler(500, 'Failed to generate buffer');
-    }
+
+    const form = new FormData();
+    form.append("file", file.buffer, {
+      filename: file.originalname,
+      contentType: file.mimetype,
+    });
+    
     let axiosData;
     try {
       const {data} = await axios.post(
         `${process.env.UPLOAD_SERVICE}/api/utils/uploads`,
-        { buffer: filebuffer.content }
+        form,
+        {
+          headers: form.getHeaders(),
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+        }
       );
-      axiosData = data
+      axiosData = data;
     } catch(error:any) {
       console.error("Utils service is not working");
       throw new ErrorHandler(500, error.message);

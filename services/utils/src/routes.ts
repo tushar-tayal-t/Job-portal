@@ -1,32 +1,40 @@
 import express from 'express';
 import cloudinary from 'cloudinary';
 const router = express.Router();
+import { GoogleGenAI } from "@google/genai";
+import dotenv from "dotenv";
+import uploadFile from './middleware/multer.js';
+import getBuffer from "./utils/buffer.js";
 
-router.post("/uploads", async(req, res)=>{
+dotenv.config();
+
+router.post("/uploads",uploadFile , async(req, res)=>{
   try {
-    const { buffer, public_id } = req.body;
+    const { public_id } = req.body;
+
+    if (!req.file || !req.file.buffer) {
+      res.status(500).json({ message: "Upload file not found" });
+    }
+    const filebuffer = getBuffer(req.file);
+    if (!filebuffer || !filebuffer?.content) {
+      res.status(500).json({message: 'Failed to generate buffer'});
+    }
+    
     if (public_id) {
       cloudinary.v2.uploader.destroy(public_id);
     }
-
-    const cloud = await cloudinary.v2.uploader.upload(buffer);
     
+    const result = await cloudinary.v2.uploader.upload(filebuffer.content as string);
     res.json({
-      url: cloud.secure_url,
-      public_id: cloud.public_id
+      url: result?.secure_url,
+      public_id: result?.public_id,
     });
-
   } catch(error: any) {
     res.status(500).json({
       message: error.message
     });
   }
 });
-
-import { GoogleGenAI } from "@google/genai";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 

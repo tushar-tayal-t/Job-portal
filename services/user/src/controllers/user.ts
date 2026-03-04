@@ -4,6 +4,7 @@ import getBuffer from "../utils/buffer.js";
 import sql from "../utils/db.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { TryCatch } from "../utils/TryCatch.js";
+import FormData from "form-data";
 
 export const myProfile = TryCatch(
   async(req: AuthenticatedRequest, res, next) => {
@@ -64,23 +65,25 @@ export const updateProfilePic = TryCatch(async(req:AuthenticatedRequest, res)=>{
   }
   
   const file = req.file;
-  
   if (!file) {
     throw new ErrorHandler(400, "No image file provided");
   }
+  
   const oldPublicId = user.profile_pic_public_id;
   
-  const fileBuffer = getBuffer(file);
-  if (!fileBuffer || !fileBuffer.content) {
-    throw new ErrorHandler(500, "Failed to generate buffer");
+  const form = new FormData();
+  form.append("file", file.buffer, {
+    filename: file.originalname,
+    contentType: file.mimetype,
+  });
+
+  if (oldPublicId) {
+    form.append("public_id", oldPublicId);
   }
   
   const {data : uploadResult}: {
     data: { url?: string; public_id?: string, message?: string }
-  } = await axios.post(`${process.env.UPLOAD_SERVICE}/api/utils/uploads`, {
-    buffer: fileBuffer.content,
-    public_id: oldPublicId
-  });
+  } = await axios.post(`${process.env.UPLOAD_SERVICE}/api/utils/uploads`, form);
 
   
   const [updatedUser] = await sql`
@@ -102,23 +105,25 @@ export const updateResume = TryCatch(async(req:AuthenticatedRequest, res)=>{
   }
   
   const file = req.file;
-  
+   
   if (!file) {
     throw new ErrorHandler(400, "No pdf file provided");
   }
   const oldPublicId = user.resume_public_id;
   
-  const fileBuffer = getBuffer(file);
-  if (!fileBuffer || !fileBuffer.content) {
-    throw new ErrorHandler(500, "Failed to generate buffer");
+  const form = new FormData();
+  form.append("file", file.buffer, {
+    filename: file.originalname,
+    contentType: file.mimetype,
+  });
+
+  if (oldPublicId) {
+    form.append("public_id", oldPublicId);
   }
   
   const {data : uploadResult}: {
     data: { url?: string; public_id?: string, message?: string }
-  } = await axios.post(`${process.env.UPLOAD_SERVICE}/api/utils/uploads`, {
-    buffer: fileBuffer.content,
-    public_id: oldPublicId
-  });
+  } = await axios.post(`${process.env.UPLOAD_SERVICE}/api/utils/uploads`, form);
 
   
   const [updatedUser] = await sql`
@@ -279,6 +284,10 @@ export const applyForJob = TryCatch(
 );
 
 export const getAllApplications = TryCatch(async(req: AuthenticatedRequest, res)=>{
+  if (req.user?.role !== "jobseeker") {
+    res.json(null);
+  }
+
   const applications = await sql`
     SELECT 
       a.*, 

@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { auth_service, useAppData } from '@/context/AppContext';
 import axios from 'axios';
+import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React, { SubmitEvent, useState } from 'react'
@@ -54,6 +55,7 @@ const ForgotPage = () => {
             required
           />
           <Button disabled={btnLoading} className='flex items-center justify-center gap-2'>
+            {btnLoading && <Loader2 size={18} className='animate-spin'/>}
             Submit
           </Button>
         </div>

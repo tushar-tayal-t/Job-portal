@@ -52,7 +52,7 @@ const Skills: React.FC<AccountProps> = ({user, isYourAccount}) => {
 
         {/* Add skills Input */}
         {
-          isYourAccount && <div className="flex gap-3 flex-col sm:flex-row">
+          isYourAccount && <div className="flex justify-center gap-3 flex-col px-10 sm:flex-row w-full">
             <div className="relative flex-1">
               <Sparkles size={18} className='absolute left-3 top-1/2 -translate-y-1/2 opacity-50'/>
               <Input 

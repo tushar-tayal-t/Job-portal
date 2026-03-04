@@ -31,10 +31,9 @@ const Navbar = () => {
           <div className='flex items-center'>
             <Link href={'/'} className='flex items-center gap-1 group'> 
               <div className='text-2xl font-bold tracking-tight'>
-                <span 
-                  className="bg-linear-to-r from bg-blue-600 to-blue-800 bg-clip-text text-transparent"
-                  >Hire</span>
-                  <span className='text-red-500'>Heaven</span>
+                <div className='w-50 overflow-hidden'>
+                  <img src="/logo.png" alt="Logo" className='object-cover w-full h-full'/>
+                </div>
               </div>
             </Link>
           </div>

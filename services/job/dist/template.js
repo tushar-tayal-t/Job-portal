@@ -89,7 +89,7 @@ export const applicationStatusUpdateTemplate = (jobTitle) => {
                             </p> 
                              
                             <p class="text-muted"> 
-                                You can check your application status at HireHeaven. 
+                                You can check your application status at JobsPortal. 
                             </p> 
                              
                             <p class="text-muted"> 
@@ -102,7 +102,7 @@ export const applicationStatusUpdateTemplate = (jobTitle) => {
                     <tr> 
                         <td class="footer"> 
                             <p class="footer-text"> 
-                                © 2025 HireHeaven. All rights reserved. 
+                                © 2025 JobsPortal. All rights reserved. 
                             </p> 
                             <p class="footer-text"> 
                                 This is an automated message, please do not reply. 

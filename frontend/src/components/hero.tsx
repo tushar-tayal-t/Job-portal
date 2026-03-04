@@ -22,8 +22,8 @@ const Hero = () => {
             {/* main heading */}
             <h1 className='text-4xl md:text-5xl lg:text-6xl font-bold leading-tight'>
               Find your dream job at{" "} 
-              <span className='inline-block'>Hire</span> 
-              <span className='text-red-500'>Heaven</span>
+              <span className='inline-block text-orange-400'>Jobs</span> 
+              <span className='text-blue-900'>Portal</span>
             </h1>
 
             {/* description */}
